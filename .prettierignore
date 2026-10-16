@@ -1,0 +1,6 @@
+.next
+node_modules
+src/lib/database.types.ts
+docs/screenshots
+assets
+supabase/.temp
