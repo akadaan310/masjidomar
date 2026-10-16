@@ -42,7 +42,7 @@ next-env.d.ts
 
 # Masjid Omar
 !.env.example
-DEMO_ACCESS.txt
+DEMO_ACCESS*.txt
 /test-results/
 /playwright-report/
 /supabase/.temp/
