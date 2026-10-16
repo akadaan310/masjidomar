@@ -37,6 +37,10 @@ export default async function ImamQuestion({ params }: { params: Promise<{ id: s
   const myDraft = (messages ?? []).find((m) => m.is_draft && m.author_id === user?.id) ?? null;
   const fmt = (s: string) => new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "America/New_York" }).format(new Date(s));
   const unassigned = !q.assigned_imam_id;
+  // Only offer "Discard draft" when the database function is installed (PGRST202 = function not found).
+  const canDiscard = myDraft
+    ? (await supabase.rpc("imam_discard_draft", { p_question_id: "00000000-0000-0000-0000-000000000000" })).error?.code !== "PGRST202"
+    : false;
 
   return (
     <div className="grid gap-8 xl:grid-cols-[1.6fr_1fr]">
@@ -81,7 +85,7 @@ export default async function ImamQuestion({ params }: { params: Promise<{ id: s
           ) : (
             <div className="mt-4">
               <DraftEditor questionId={q.id} draft={myDraft ? { body: myDraft.body, kind: myDraft.kind } : null} />
-              {myDraft && (
+              {myDraft && canDiscard && (
                 <form action={imamDiscardDraft} className="mt-3">
                   <input type="hidden" name="questionId" value={q.id} />
                   <button type="submit" className="btn btn-ghost text-sm">Discard draft</button>

@@ -89,9 +89,17 @@ export async function signup(_prev: FormState, formData: FormData): Promise<Form
   if (error) {
     if (error.code === "weak_password") return { error: "Please choose a stronger password." };
     if (error.code === "over_email_send_rate_limit") return { error: "Too many emails sent. Please try again in a little while." };
+    if (error.code === "email_address_not_authorized" || /not authorized/i.test(error.message))
+      return { error: "New account sign-ups are not open yet in this preview because email sending hasn't been set up. Please ask the masjid team for a demo account." };
+    if (error.status && error.status >= 500)
+      return { error: "Sign-ups are temporarily unavailable in this preview. Please ask the masjid team for a demo account." };
     return { error: "We couldn't create the account. If you already have one, try signing in or resetting your password." };
   }
-  return { ok: true, message: "Check your email for a verification link. Once confirmed, you can sign in." };
+  return {
+    ok: true,
+    message:
+      "Check your email for a verification link. After you click it, come back to this site and sign in — if the link opens a page that doesn't load, your account is still verified.",
+  };
 }
 
 export async function requestPasswordReset(_prev: FormState, formData: FormData): Promise<FormState> {
